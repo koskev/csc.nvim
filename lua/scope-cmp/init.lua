@@ -6,6 +6,8 @@ M.config = {
 	max_suggestions = 10,
 }
 
+M.parser = require("scope-cmp.parser")
+
 function M.is_git_repo(path)
 	path = path or vim.fn.getcwd()
 
@@ -71,10 +73,25 @@ function M.setup_commit_buffer(bufnr)
 		end,
 	})
 
+	M.parser.start_cursor_tracking(bufnr, M.config)
+
 	-- create buffer-local commands
-	vim.api.nvim_buf_create_user_command(bufnr, 'CommitScopeStatus', function()
-		M.show_commit_status()
-	end, { desc = 'Show commit scope plugin status' })
+	vim.api.nvim_buf_create_user_command(
+		bufnr, 'CommitScopeStatus',
+		function()
+			M.show_commit_status()
+		end,
+		{ desc = 'Show commit scope plugin status' }
+	)
+
+	vim.api.nvim_buf_create_user_command(
+		bufnr, 'CommitScopeContext',
+		function()
+			local edit_context = M.parser.get_scope_edit_context()
+			print(vim.inspect(edit_context))
+		end,
+		{ desc = 'Show current scope context' }
+	)
 
 	vim.notify("Commit scope plugin active", vim.log.levels.INFO)
 end
