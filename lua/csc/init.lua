@@ -6,7 +6,7 @@ M.config = {
 	max_suggestions = 10,
 }
 
-M.parser = require("scope-cmp.parser")
+M.parser = require("csc.parser")
 
 function M.is_git_repo(path)
 	path = path or vim.fn.getcwd()
