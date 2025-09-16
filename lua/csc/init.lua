@@ -7,6 +7,7 @@ M.config = {
 }
 
 M.parser = require("csc.parser")
+local git = require('csc.git')
 
 function M.is_git_repo(path)
 	path = path or vim.fn.getcwd()
@@ -131,6 +132,15 @@ function M.setup(opts)
 		{ desc = 'Test commit scope plugin' }
 	)
 
+	-- new command to test git
+	vim.api.nvim_create_user_command(
+		'CommitScopeTestGit',
+		function()
+			M.test_git_integration()
+		end,
+		{ desc = 'Test git integration' }
+	)
+
 	if M.config.debug then
 		M.log("Plugin setup complete")
 	end
@@ -145,6 +155,37 @@ function M.test_plugin()
 	}
 
 	vim.notify(table.concat(results, '\n'), vim.log.levels.INFO)
+end
+
+function M.test_git_integration()
+	local callback = function(results)
+		local output = {
+			"Git Integration Test Results:",
+			"",
+			"Git available: " .. (results.git_available and "ye" or "no"),
+			"In git repo: " .. (results.in_repo and "ye" or "no"),
+		}
+
+		if results.git_root then
+			table.insert(output, "Git root: " .. results.git_root)
+		end
+
+		if #results.recent_commits > 0 then
+			table.insert(output, "")
+			table.insert(output, "Recent commits:")
+			for i, commit in ipairs(results.recent_commits) do
+				if i <= 3 then
+					table.insert(output, string.format("- %s: %s",
+						commit.hash:sub(1, 7),
+						commit.subject:sub(1, 50)))
+				end
+			end
+		end
+
+		vim.notify(table.concat(output, '\n'), vim.log.levels.INFO)
+	end
+
+	git.test_git_commands(callback)
 end
 
 function M.log(...)
