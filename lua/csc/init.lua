@@ -132,6 +132,8 @@ function M.setup(opts)
 		{ desc = 'Test commit scope plugin' }
 	)
 
+	-- TODO: maybe rename all these CommitScope things to CSC
+
 	-- new command to test git
 	vim.api.nvim_create_user_command(
 		'CommitScopeTestGit',
@@ -139,6 +141,14 @@ function M.setup(opts)
 			M.test_git_integration()
 		end,
 		{ desc = 'Test git integration' }
+	)
+
+	vim.api.nvim_create_user_command(
+		'CommitScopeAnalyze',
+		function()
+			M.analyze_repository_scopes()
+		end,
+		{ desc = 'Analyze repository scopes' }
 	)
 
 	if M.config.debug then
@@ -192,6 +202,85 @@ function M.log(...)
 	if M.config.debug then
 		print("[CommitScope]", ...)
 	end
+end
+
+M.scope_cache = {
+	data = nil,
+	timestamp = 0,
+	ttl = 30000
+}
+
+function M.get_scope_suggestions(opts, callback)
+	opts = opts or {}
+	local now = vim.uv.now()
+
+	if M.scope_cache.data and
+		(now - M.scope_cache.timestamp) < M.scope_cache.ttl
+	then
+		local suggestions = M.parser.get_scope_suggestions(
+			M.scope_cache.commits, opts
+		)
+		callback(nil, suggestions)
+		return
+	end
+
+	git.get_git_log({ max_count = 200 }, function(err, commits)
+		if err then
+			callback(err, nil)
+			return
+		end
+
+		M.scope_cache.data = true
+		M.scope_cache.commits = commits
+		M.scope_cache.timestamp = now
+
+		local suggestions = M.parser.get_scope_suggestions(commits, opts)
+		callback(nil, suggestions)
+	end)
+end
+
+function M.analyze_repository_scopes()
+	M.get_scope_suggestions(
+		{ max_suggestions = 50 },
+		function(err, suggestions)
+			if err then
+				vim.notify(
+					"Error analyzing scopes: " .. err, vim.log.levels.ERROR
+				)
+				return
+			end
+
+			if #suggestions == 0 then
+				vim.notify(
+					"No scopes found in commit history", vim.log.levels.WARN
+				)
+				return
+			end
+
+			local lines = { "Repository Scope Analysis:", "" }
+
+			for i, suggestion in ipairs(suggestions) do
+				if i <= 10 then
+					local lbl = suggestion.label
+					local dtl = suggestion.detail
+
+					table.insert(
+						lines,
+						string.format("  %d. %s - %s", i, lbl, dtl)
+					)
+				end
+			end
+
+			if #suggestions > 10 then
+				table.insert(
+					lines,
+					string.format("  ... and %d more", #suggestions - 10)
+				)
+			end
+
+			vim.notify(table.concat(lines, '\n'), vim.log.levels.INFO)
+		end
+	)
 end
 
 return M
