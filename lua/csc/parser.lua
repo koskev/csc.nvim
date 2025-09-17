@@ -80,14 +80,26 @@ function M.find_scope_context(line, col)
 	}
 end
 
-function M.parse_conventional_commit(line)
-	if not line or line == '' then
+local PATTERNS = {
+	full = '^(%w+)%(([^)]+)%)(!?): (.+)$',
+	no_scope = '^(%w+)(!?): (.+)$',
+	breaking_footer = 'BREAKING CHANGE: (.+)$'
+}
+
+local VALID_TYPES = {
+	'feat', 'fix', 'docs', 'style', 'refactor',
+	'test', 'chore', 'perf', 'ci', 'build', 'revert'
+}
+
+function M.parse_conventional_commit(message)
+	if not message or message == '' then
 		return nil
 	end
 
-	-- pattern: type(scope): description
-	local type_pattern = '^(%w+)%(([^)]*)%)(!?): (.+)$'
-	local commit_type, scope, breaking, description = line:match(type_pattern)
+	local lines = vim.split(message, '\n')
+	local subject = lines[1]
+
+	local commit_type, scope, breaking, description = subject:match(PATTERNS.full)
 
 	if commit_type then
 		return {
@@ -96,13 +108,12 @@ function M.parse_conventional_commit(line)
 			breaking = breaking == '!',
 			description = description,
 			has_scope = true,
-			format = 'full'
+			is_valid = vim.tbl_contains(VALID_TYPES, commit_type),
+			raw_subject = subject
 		}
 	end
 
-	-- pattern: type: description (no scope)
-	local no_scope_pattern = '^(%w+)(!?): (.+)$'
-	commit_type, breaking, description = line:match(no_scope_pattern)
+	commit_type, breaking, description = subject:match(PATTERNS.no_scope)
 
 	if commit_type then
 		return {
@@ -111,11 +122,139 @@ function M.parse_conventional_commit(line)
 			breaking = breaking == '!',
 			description = description,
 			has_scope = false,
-			format = 'no_scope'
+			is_valid = vim.tbl_contains(VALID_TYPES, commit_type),
+			raw_subject = subject
 		}
 	end
 
 	return nil
+end
+
+function M.extract_scopes_from_commits(commits)
+	local scope_stats = {}
+	local type_stats = {}
+	local total_conventional = 0
+
+	for _, commit in ipairs(commits) do
+		local parsed = M.parse_conventional_commit(commit.subject)
+
+		if parsed and parsed.is_valid then
+			total_conventional = total_conventional + 1
+
+			type_stats[parsed.type] = (type_stats[parsed.type] or 0) + 1
+
+			if parsed.scope and parsed.scope ~= '' then
+				scope_stats[parsed.scope] = (scope_stats[parsed.scope] or 0) + 1
+			end
+		end
+	end
+
+	local sorted_scopes = {}
+	for scope, count in pairs(scope_stats) do
+		table.insert(sorted_scopes, {
+			scope = scope,
+			count = count,
+			frequency = count / total_conventional
+		})
+	end
+
+	table.sort(sorted_scopes, function(a, b)
+		return a.count > b.count
+	end)
+
+	return {
+		scopes = sorted_scopes,
+		types = type_stats,
+		total_commits = #commits,
+		conventional_commits = total_conventional,
+		conventional_ratio = total_conventional / #commits
+	}
+end
+
+local function scope_matches_filters(scope_data, opts)
+	if scope_data.count < opts.min_count then return false end
+	if scope_data.frequency < opts.min_frequency then return false end
+
+
+	if opts.current_input == '' then return true end
+
+	local scope = scope_data
+	if vim.startswith(scope:lower(), opts.current_input:lower()) then
+		return true
+	end
+
+	return false
+end
+
+function M.get_scope_suggestions(commits, opts)
+	opts = vim.tbl_extend('force', {
+		min_frequency = 0.01, -- 1% minimum frequency
+		min_count = 1,
+		max_suggestions = 15,
+		current_input = ''
+	}, opts or {})
+
+	local analysis = M.extract_scopes_from_commits(commits)
+	local suggestions = {}
+
+	for _, scope_data in ipairs(analysis.scopes) do
+		local scope = scope_data.scope
+
+		if scope_matches_filters(scope_data, opts) then
+			table.insert(suggestions, {
+				label = scope,
+				count = scope_data.count,
+				frequency = scope_data.frequency,
+				detail = string.format("Used %d times (%.1f%%)",
+					scope_data.count,
+					scope_data.frequency * 100)
+			})
+
+			if #suggestions >= opts.max_suggestions then
+				break
+			end
+		end
+	end
+
+	return suggestions
+end
+
+function M.validate_commit_message(message)
+	local parsed = M.parse_conventional_commit(message)
+	local errors = {}
+	local warnings = {}
+
+	if not parsed then
+		table.insert(errors, "Not a valid conventional commit format")
+		table.insert(errors, "Expected: type(scope): description")
+		return { valid = false, errors = errors, warnings = warnings }
+	end
+
+	if not parsed.is_valid then
+		table.insert(
+			warnings,
+			string.format("'%s' is not a standard commit type", parsed.type)
+		)
+		table.insert(
+			warnings,
+			"Standard types: " .. table.concat(VALID_TYPES, ", ")
+		)
+	end
+
+	if #parsed.description > 50 then
+		table.insert(warnings, "Description is longer than 50 characters")
+	end
+
+	if parsed.scope and #parsed.scope > 20 then
+		table.insert(warnings, "Scope is longer than 20 characters")
+	end
+
+	return {
+		valid = #errors == 0,
+		errors = errors,
+		warnings = warnings,
+		parsed = parsed
+	}
 end
 
 function M.get_scope_edit_context()
