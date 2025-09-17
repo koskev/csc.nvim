@@ -1,6 +1,6 @@
-local parser = {}
+local M = {}
 
-function parser.get_cursor_context()
+function M.get_cursor_context()
 	local cursor_pos = vim.api.nvim_win_get_cursor(0)
 	local line_num = cursor_pos[1]
 	local col_num = cursor_pos[2]
@@ -17,7 +17,7 @@ function parser.get_cursor_context()
 	}
 end
 
-function parser.find_scope_context(line, col)
+function M.find_scope_context(line, col)
 	if not line or col > #line then
 		return nil
 	end
@@ -80,7 +80,7 @@ function parser.find_scope_context(line, col)
 	}
 end
 
-function parser.parse_conventional_commit(line)
+function M.parse_conventional_commit(line)
 	if not line or line == '' then
 		return nil
 	end
@@ -118,13 +118,13 @@ function parser.parse_conventional_commit(line)
 	return nil
 end
 
-function parser.get_scope_edit_context()
-	local context = parser.get_cursor_context()
+function M.get_scope_edit_context()
+	local context = M.get_cursor_context()
 	local line = context.line
 	local col = context.col
 
-	local commit_info = parser.parse_conventional_commit(line)
-	local scope_context = parser.find_scope_context(line, col)
+	local commit_info = M.parse_conventional_commit(line)
+	local scope_context = M.find_scope_context(line, col)
 
 	if scope_context and scope_context.is_inside then
 		return {
@@ -145,7 +145,7 @@ function parser.get_scope_edit_context()
 	}
 end
 
-function parser.start_cursor_tracking(bufnr, config)
+function M.start_cursor_tracking(bufnr, config)
 	local augroup = vim.api.nvim_create_augroup(
 		'CommitScopeCursor', { clear = true }
 	)
@@ -154,7 +154,7 @@ function parser.start_cursor_tracking(bufnr, config)
 		group = augroup,
 		buffer = bufnr,
 		callback = function()
-			local edit_context = parser.get_scope_edit_context()
+			local edit_context = M.get_scope_edit_context()
 
 			if config.debug and edit_context.in_scope_parentheses then
 				local msg = string.format("In scope: '%s' (partial: '%s')",
@@ -166,4 +166,4 @@ function parser.start_cursor_tracking(bufnr, config)
 	})
 end
 
-return parser
+return M
