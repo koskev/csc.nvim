@@ -51,7 +51,7 @@ function M.find_scope_context(line, col)
 	paren_depth = 0
 
 	-- find close paren
-	for i = col, #line do
+	for i = open_paren + 1, #line do
 		local char = line:sub(i, i)
 		if char == '(' then
 			paren_depth = paren_depth + 1

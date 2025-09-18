@@ -35,8 +35,6 @@ function source:complete(params, callback)
 
 	local scope_context = parser.get_scope_edit_context()
 
-	-- TODO: removing this fixes the issue
-	-- MEANING, the in_scope_parentheses is not working properly
 	if not scope_context.in_scope_parentheses then
 		callback({})
 		return
