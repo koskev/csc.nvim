@@ -71,8 +71,8 @@ function M.show_commit_status()
 	local status_info = {
 		"Commit Scope Status:",
 		"",
-		"Git repo: " .. (M.is_git_repo() and "Yes" or "No"),
-		"Commit buffer: " .. (M.is_git_commit_buffer(bufnr) and "Yes" or "No"),
+		"Git repo: " .. (git.is_git_repo() and "Yes" or "No"),
+		"Commit buffer: " .. (git.is_git_commit_buffer(bufnr) and "Yes" or "No"),
 		"Buffer name: " .. vim.api.nvim_buf_get_name(bufnr),
 		"Filetype: " .. vim.bo[bufnr].filetype,
 	}
