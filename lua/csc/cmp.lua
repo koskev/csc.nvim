@@ -58,8 +58,7 @@ function source:complete(params, callback)
 		local items = {}
 		for _, suggestion in ipairs(suggestions) do
 			table.insert(items, {
-					-- TODO: decide whether to keep prefix
-				label = "[SCOPE] " .. suggestion.label,
+				label = suggestion.label,
 				kind = cmp.lsp.CompletionItemKind.Text,
 				detail = suggestion.detail,
 				documentation = {
