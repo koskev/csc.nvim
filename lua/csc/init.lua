@@ -52,7 +52,7 @@ function M.setup_commit_buffer(bufnr)
 		end,
 	})
 
-	M.parser.start_cursor_tracking(bufnr, M.config)
+	M.parser.start_cursor_tracking(bufnr, M.logger)
 
 	M.logger.log("CSC plugin active", vim.log.levels.INFO)
 end
@@ -89,7 +89,6 @@ function M.setup(opts)
 		'CommitScopeBuffer', { clear = true }
 	)
 
-
 	-- clean up when buffers are deleted
 	vim.api.nvim_create_autocmd('BufDelete', {
 		group = augroup,
@@ -105,7 +104,7 @@ function M.setup(opts)
 
 	require('csc.commands').setup()
 
-	cmp_source.setup()
+	cmp_source.setup(M.logger)
 
 	M.logger.log("Plugin setup complete")
 end

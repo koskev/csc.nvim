@@ -49,8 +49,9 @@ function source:complete(params, callback)
 		max_suggestions = 15
 	}, function(err, suggestions)
 		if err then
-			local logger = require('csc.logger').setup({ debug = true })
-			logger.log("Completion error:", err)
+			if self.logger then
+				self.logger.log("Completion error:", err)
+			end
 			callback({})
 			return
 		end
@@ -80,7 +81,8 @@ function source:complete(params, callback)
 	end)
 end
 
-function M.setup()
+function M.setup(logger)
+	source.logger = logger
 	cmp.register_source('csc', source)
 
 	vim.api.nvim_create_autocmd('FileType', {

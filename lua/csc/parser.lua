@@ -321,7 +321,7 @@ function M.get_scope_edit_context()
 	}
 end
 
-function M.start_cursor_tracking(bufnr, config)
+function M.start_cursor_tracking(bufnr, logger)
 	local augroup = vim.api.nvim_create_augroup(
 		'CSCCursor', { clear = true }
 	)
@@ -344,14 +344,13 @@ function M.start_cursor_tracking(bufnr, config)
 
 			last_in_scope = currently_in_scope
 
-			if config.debug and edit_context.in_scope_parentheses then
-				local logger = require('csc.logger').setup(config)
+			if logger and edit_context.in_scope_parentheses then
 				local msg = string.format(
 					"In scope: '%s' (partial: '%s')",
 					edit_context.current_scope,
 					edit_context.partial_scope
 				)
-				logger.log(msg, vim.log.levels.INFO)
+				logger.log(msg)
 			end
 		end,
 	})

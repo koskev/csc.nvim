@@ -1,7 +1,5 @@
 local M = {}
 
-M.logger = require('csc.logger').setup({ debug = true })
-
 -- subcommands
 Subs = {
 	test = {
@@ -27,10 +25,13 @@ Subs = {
 			for name, s in pairs(Subs) do
 				table.insert(lines, ("  %-9s — %s"):format(name, s.desc))
 			end
-			M.logger.log(
-				table.concat(lines, "\n"),
-				vim.log.levels.INFO
-			)
+
+			if M.logger then
+				M.logger.log(
+					table.concat(lines, "\n"),
+					vim.log.levels.INFO
+				)
+			end
 		end,
 	},
 }
@@ -45,17 +46,21 @@ local function complete_sub(_, line)
 	return out
 end
 
-function M.setup()
+function M.setup(logger)
+	M.logger = logger
+
 	vim.api.nvim_create_user_command(
 		"CSC",
 		function(opts)
 			local sub = (opts.fargs[1] or "help"):lower()
 			local cmd = Subs[sub]
 			if not cmd then
-				M.logger.log(
-					("CSC: unknown subcommand '%s'"):format(sub),
-					vim.log.levels.WARN
-				)
+				if M.logger then
+					M.logger.log(
+						("CSC: unknown subcommand '%s'"):format(sub),
+						vim.log.levels.WARN
+					)
+				end
 				Subs.help.run()
 				return
 			end
