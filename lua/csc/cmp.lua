@@ -49,7 +49,7 @@ function source:complete(params, callback)
 		max_suggestions = 15
 	}, function(err, suggestions)
 		if err then
-			local logger = require('csc.util').setup({ debug = true })
+			local logger = require('csc.logger').setup({ debug = true })
 			logger.log("Completion error:", err)
 			callback({})
 			return

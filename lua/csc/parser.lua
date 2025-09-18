@@ -348,7 +348,7 @@ function M.start_cursor_tracking(bufnr, config)
 				local msg = string.format("In scope: '%s' (partial: '%s')",
 					edit_context.current_scope,
 					edit_context.partial_scope)
-				require('csc.util').setup(config).log(msg, vim.log.levels.INFO)
+				require('csc.logger').setup(config).log(msg, vim.log.levels.INFO)
 			end
 		end,
 	})

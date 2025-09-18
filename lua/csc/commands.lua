@@ -1,6 +1,6 @@
 local M = {}
 
-M.logger = require('csc.util').setup({ debug = true })
+M.logger = require('csc.logger').setup({ debug = true })
 
 -- subcommands
 Subs = {

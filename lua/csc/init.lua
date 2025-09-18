@@ -80,7 +80,7 @@ local cmp_source = require('csc.cmp')
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
-	M.logger = require('csc.util').setup(M.config)
+	M.logger = require('csc.logger').setup(M.config)
 
 	-- reset initialized buffers on setup (in case of reload)
 	M.initialized_buffers = {}
