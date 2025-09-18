@@ -134,8 +134,8 @@ function M.test_plugin()
 	local results = {
 		"Plugin Test Results:",
 		"",
-		"Git repo: " .. (M.is_git_repo() and "ye" or "no"),
-		"Commit buffer: " .. (M.is_git_commit_buffer() and "ye" or "no"),
+		"Git repo: " .. (git.is_git_repo() and "ye" or "no"),
+		"Commit buffer: " .. (git.is_git_commit_buffer() and "ye" or "no"),
 	}
 
 	vim.notify(table.concat(results, '\n'), vim.log.levels.INFO)
@@ -173,7 +173,7 @@ function M.test_git_integration()
 end
 
 function M.analyze_repository_scopes()
-	M.get_scope_suggestions(
+	M.parser.get_scope_suggestions(
 		{ max_suggestions = 50 },
 		function(err, suggestions)
 			if err then
