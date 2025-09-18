@@ -77,6 +77,7 @@ function M.show_commit_status()
 		"Filetype: " .. vim.bo[bufnr].filetype,
 	}
 
+	-- TODO: mayb rename
 	vim.notify(table.concat(status_info, '\n'), vim.log.levels.INFO, {
 		title = "Commit Scope"
 	})
