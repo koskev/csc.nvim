@@ -54,24 +54,6 @@ function M.setup_commit_buffer(bufnr)
 
 	M.parser.start_cursor_tracking(bufnr, M.config)
 
-	-- create buffer-local commands
-	vim.api.nvim_buf_create_user_command(
-		bufnr, 'CommitScopeStatus',
-		function()
-			M.show_commit_status()
-		end,
-		{ desc = 'Show commit scope plugin status' }
-	)
-
-	vim.api.nvim_buf_create_user_command(
-		bufnr, 'CommitScopeContext',
-		function()
-			local edit_context = M.parser.get_scope_edit_context()
-			print(vim.inspect(edit_context))
-		end,
-		{ desc = 'Show current scope context' }
-	)
-
 	M.logger.log("CSC plugin active", vim.log.levels.INFO)
 end
 
