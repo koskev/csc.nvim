@@ -9,10 +9,18 @@ M.config = {
 M.parser = require("csc.parser")
 local git = require('csc.git')
 
+M.initialized_buffers = {}
+
 function M.on_buffer_enter(args)
 	local logger = require('csc.util').setup(M.config)
 
 	local bufnr = args.buf
+
+	-- skip if already initialized
+	if M.initialized_buffers[bufnr] then
+		logger.log("Buffer already initialized:", bufnr)
+		return
+	end
 
 	if not git.is_git_repo() then
 		logger.log("Not in a git repository")
@@ -22,6 +30,9 @@ function M.on_buffer_enter(args)
 	if git.is_git_commit_buffer(bufnr) then
 		logger.log("Detected git commit buffer:", vim.api.nvim_buf_get_name(bufnr))
 		M.setup_commit_buffer(bufnr)
+
+		-- mark as initialized
+		M.initialized_buffers[bufnr] = true
 	end
 end
 
@@ -88,10 +99,22 @@ local cmp_source = require('csc.cmp')
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
+	-- reset initialized buffers on setup (in case of reload)
+	M.initialized_buffers = {}
+
 	-- autocommand for buffer detection
 	local augroup = vim.api.nvim_create_augroup(
 		'CommitScopeBuffer', { clear = true }
 	)
+
+	-- clean up when buffers are deleted
+	vim.api.nvim_create_autocmd('BufDelete', {
+		group = augroup,
+		callback = function(args)
+			M.initialized_buffers[args.buf] = nil
+		end,
+	})
+
 	vim.api.nvim_create_autocmd({ 'BufEnter', 'BufNewFile', 'BufRead' }, {
 		group = augroup,
 		callback = M.on_buffer_enter,
