@@ -109,8 +109,8 @@ function M.test_plugin()
 	local results = {
 		"Plugin Test Results:",
 		"",
-		"Git repo: " .. (git.is_git_repo() and "ye" or "no"),
-		"Commit buffer: " .. (git.is_git_commit_buffer() and "ye" or "no"),
+		"Git repo: " .. (git.is_git_repo() and "Yes" or "No"),
+		"Commit buffer: " .. (git.is_git_commit_buffer() and "Yes" or "No"),
 	}
 
 	vim.notify(table.concat(results, '\n'), vim.log.levels.INFO)
@@ -121,8 +121,8 @@ function M.test_git_integration()
 		local output = {
 			"Git Integration Test Results:",
 			"",
-			"Git available: " .. (results.git_available and "ye" or "no"),
-			"In git repo: " .. (results.in_repo and "ye" or "no"),
+			"Git available: " .. (results.git_available and "Yes" or "No"),
+			"In git repo: " .. (results.in_repo and "Yes" or "No"),
 		}
 
 		if results.git_root then
