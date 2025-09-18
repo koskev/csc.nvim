@@ -323,7 +323,7 @@ end
 
 function M.start_cursor_tracking(bufnr, config)
 	local augroup = vim.api.nvim_create_augroup(
-		'CommitScopeCursor', { clear = true }
+		'CSCCursor', { clear = true }
 	)
 
 	local last_in_scope = false

@@ -81,8 +81,7 @@ function source:complete(params, callback)
 end
 
 function M.setup()
-	-- TODO: maybe rename here
-	cmp.register_source('commit_scope', source)
+	cmp.register_source('csc', source)
 
 	vim.api.nvim_create_autocmd('FileType', {
 		pattern = 'gitcommit',
@@ -100,14 +99,14 @@ function M.setup()
 			-- but only if it's not already there
 			local has_commit_scope = false
 			for _, s in ipairs(sources) do
-				if s.name == 'commit_scope' then
+				if s.name == 'csc' then
 					has_commit_scope = true
 					break
 				end
 			end
 
 			if not has_commit_scope then
-				table.insert(sources, 1, { name = 'commit_scope', priority = 100 })
+				table.insert(sources, 1, { name = 'csc', priority = 100 })
 			end
 
 			-- apply the extended configuration
