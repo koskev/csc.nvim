@@ -328,7 +328,7 @@ function M.start_cursor_tracking(bufnr, config)
 
 	local last_in_scope = false
 
-	vim.api.nvim_create_autocmd({ 'CursorMovedI', 'TextChangedI' }, {
+	vim.api.nvim_create_autocmd({ 'TextChangedI' }, {
 		group = augroup,
 		buffer = bufnr,
 		callback = function()
