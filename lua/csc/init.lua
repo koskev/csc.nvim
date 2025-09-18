@@ -70,8 +70,7 @@ function M.show_commit_status()
 
 	M.logger.log(
 		table.concat(status_info, '\n'),
-		vim.log.levels.INFO,
-		{ title = "CSC"}
+		vim.log.levels.INFO
 	)
 end
 

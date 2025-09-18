@@ -8,12 +8,13 @@ function M.setup(opts)
 end
 
 function M.log(msg, level, opts)
-	if M.config.debug then
-		print("[CSC]", msg)
-	end
-
 	if level then
+		opts = opts or {}
+		opts.title = "csc.nvim"
 		vim.notify(msg, level, opts)
+
+	elseif M.config.debug then
+		print("[csc.nvim]", msg)
 	end
 end
 

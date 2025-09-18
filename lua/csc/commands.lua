@@ -29,8 +29,7 @@ Subs = {
 			end
 			M.logger.log(
 				table.concat(lines, "\n"),
-				vim.log.levels.INFO,
-				{ title = "csc.nvim" }
+				vim.log.levels.INFO
 			)
 		end,
 	},
