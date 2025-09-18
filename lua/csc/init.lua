@@ -12,23 +12,21 @@ local git = require('csc.git')
 M.initialized_buffers = {}
 
 function M.on_buffer_enter(args)
-	local logger = require('csc.util').setup(M.config)
-
 	local bufnr = args.buf
 
 	-- skip if already initialized
 	if M.initialized_buffers[bufnr] then
-		logger.log("Buffer already initialized:", bufnr)
+		M.logger.log("Buffer already initialized:" .. bufnr)
 		return
 	end
 
 	if not git.is_git_repo() then
-		logger.log("Not in a git repository")
+		M.logger.log("Not in a git repository")
 		return
 	end
 
 	if git.is_git_commit_buffer(bufnr) then
-		logger.log("Detected git commit buffer:", vim.api.nvim_buf_get_name(bufnr))
+		M.logger.log("Detected git commit buffer:" .. vim.api.nvim_buf_get_name(bufnr))
 		M.setup_commit_buffer(bufnr)
 
 		-- mark as initialized
@@ -74,7 +72,7 @@ function M.setup_commit_buffer(bufnr)
 		{ desc = 'Show current scope context' }
 	)
 
-	vim.notify("Commit scope plugin active", vim.log.levels.INFO)
+	M.logger.log("CSC plugin active", vim.log.levels.INFO)
 end
 
 function M.show_commit_status()
@@ -88,16 +86,19 @@ function M.show_commit_status()
 		"Filetype: " .. vim.bo[bufnr].filetype,
 	}
 
-	-- TODO: mayb rename
-	vim.notify(table.concat(status_info, '\n'), vim.log.levels.INFO, {
-		title = "Commit Scope"
-	})
+	M.logger.log(
+		table.concat(status_info, '\n'),
+		vim.log.levels.INFO,
+		{ title = "CSC"}
+	)
 end
 
 local cmp_source = require('csc.cmp')
 
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts or {})
+
+	M.logger = require('csc.util').setup(M.config)
 
 	-- reset initialized buffers on setup (in case of reload)
 	M.initialized_buffers = {}
@@ -106,6 +107,7 @@ function M.setup(opts)
 	local augroup = vim.api.nvim_create_augroup(
 		'CommitScopeBuffer', { clear = true }
 	)
+
 
 	-- clean up when buffers are deleted
 	vim.api.nvim_create_autocmd('BufDelete', {
@@ -124,8 +126,7 @@ function M.setup(opts)
 
 	cmp_source.setup()
 
-	local logger = require('csc.util').setup(M.config)
-	logger.log("Plugin setup complete")
+	M.logger.log("Plugin setup complete")
 end
 
 function M.test_plugin()
@@ -136,7 +137,7 @@ function M.test_plugin()
 		"Commit buffer: " .. (git.is_git_commit_buffer() and "Yes" or "No"),
 	}
 
-	vim.notify(table.concat(results, '\n'), vim.log.levels.INFO)
+	M.logger.log(table.concat(results, '\n'), vim.log.levels.INFO)
 end
 
 function M.test_git_integration()
@@ -164,7 +165,7 @@ function M.test_git_integration()
 			end
 		end
 
-		vim.notify(table.concat(output, '\n'), vim.log.levels.INFO)
+		M.logger.log(table.concat(output, '\n'), vim.log.levels.INFO)
 	end
 
 	git.test_git_commands(callback)
@@ -175,14 +176,14 @@ function M.analyze_repository_scopes()
 		{ max_suggestions = 50 },
 		function(err, suggestions)
 			if err then
-				vim.notify(
+				M.logger.log(
 					"Error analyzing scopes: " .. err, vim.log.levels.ERROR
 				)
 				return
 			end
 
 			if #suggestions == 0 then
-				vim.notify(
+				M.logger.log(
 					"No scopes found in commit history", vim.log.levels.WARN
 				)
 				return
@@ -209,7 +210,7 @@ function M.analyze_repository_scopes()
 				)
 			end
 
-			vim.notify(table.concat(lines, '\n'), vim.log.levels.INFO)
+			M.logger.log(table.concat(lines, '\n'), vim.log.levels.INFO)
 		end
 	)
 end

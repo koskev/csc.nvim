@@ -7,9 +7,13 @@ function M.setup(opts)
 	return M
 end
 
-function M.log(...)
+function M.log(msg, level, opts)
 	if M.config.debug then
-		print("[CommitScope]", ...)
+		print("[CSC]", msg)
+	end
+
+	if level then
+		vim.notify(msg, level, opts)
 	end
 end
 
