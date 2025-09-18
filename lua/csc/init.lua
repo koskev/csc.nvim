@@ -97,32 +97,7 @@ function M.setup(opts)
 		callback = M.on_buffer_enter,
 	})
 
-	-- enhanced test command
-	vim.api.nvim_create_user_command(
-		'CommitScopeTest',
-		function() M.test_plugin() end,
-		{ desc = 'Test commit scope plugin' }
-	)
-
-	-- TODO: maybe rename all these CommitScope things to CSC
-
-	-- TODO: might not need func wrap?
-	-- new command to test git
-	vim.api.nvim_create_user_command(
-		'CommitScopeTestGit',
-		function()
-			M.test_git_integration()
-		end,
-		{ desc = 'Test git integration' }
-	)
-
-	vim.api.nvim_create_user_command(
-		'CommitScopeAnalyze',
-		function()
-			M.analyze_repository_scopes()
-		end,
-		{ desc = 'Analyze repository scopes' }
-	)
+	require('csc.commands').setup()
 
 	cmp_source.setup()
 
