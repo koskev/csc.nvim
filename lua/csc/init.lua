@@ -9,49 +9,18 @@ M.config = {
 M.parser = require("csc.parser")
 local git = require('csc.git')
 
-function M.is_git_repo(path)
-	path = path or vim.fn.getcwd()
-
-	vim.fn.system({ 'git', '-C', path, 'rev-parse', '--git-dir' })
-	return vim.v.shell_error == 0
-end
-
--- bufnr (buf number)
-function M.is_git_commit_buffer(bufnr)
-	bufnr = bufnr or vim.api.nvim_get_current_buf()
-
-	local bufname = vim.api.nvim_buf_get_name(bufnr)
-	local filetype = vim.bo[bufnr].filetype
-
-	local patterns = {
-		'COMMIT_EDITMSG$',
-		'%.git[/\\]COMMIT_EDITMSG$',
-		'git%-rebase%-todo$',
-	}
-
-	if filetype == 'gitcommit' then
-		return true
-	end
-
-	for _, pattern in ipairs(patterns) do
-		if bufname:match(pattern) then
-			return true
-		end
-	end
-
-	return false
-end
-
 function M.on_buffer_enter(args)
+	local logger = require('csc.util').setup(M.config)
+
 	local bufnr = args.buf
 
-	if not M.is_git_repo() then
-		M.log("Not in a git repository")
+	if not git.is_git_repo() then
+		logger.log("Not in a git repository")
 		return
 	end
 
-	if M.is_git_commit_buffer(bufnr) then
-		M.log("Detected git commit buffer:", vim.api.nvim_buf_get_name(bufnr))
+	if git.is_git_commit_buffer(bufnr) then
+		logger.log("Detected git commit buffer:", vim.api.nvim_buf_get_name(bufnr))
 		M.setup_commit_buffer(bufnr)
 	end
 end
@@ -113,6 +82,8 @@ function M.show_commit_status()
 	})
 end
 
+local cmp_source = require('csc.cmp')
+
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
@@ -134,6 +105,7 @@ function M.setup(opts)
 
 	-- TODO: maybe rename all these CommitScope things to CSC
 
+	-- TODO: might not need func wrap?
 	-- new command to test git
 	vim.api.nvim_create_user_command(
 		'CommitScopeTestGit',
@@ -151,9 +123,10 @@ function M.setup(opts)
 		{ desc = 'Analyze repository scopes' }
 	)
 
-	if M.config.debug then
-		M.log("Plugin setup complete")
-	end
+	cmp_source.setup()
+
+	local logger = require('csc.util').setup(M.config)
+	logger.log("Plugin setup complete")
 end
 
 function M.test_plugin()
@@ -196,47 +169,6 @@ function M.test_git_integration()
 	end
 
 	git.test_git_commands(callback)
-end
-
-function M.log(...)
-	if M.config.debug then
-		print("[CommitScope]", ...)
-	end
-end
-
-M.scope_cache = {
-	data = nil,
-	timestamp = 0,
-	ttl = 30000
-}
-
-function M.get_scope_suggestions(opts, callback)
-	opts = opts or {}
-	local now = vim.uv.now()
-
-	if M.scope_cache.data and
-		(now - M.scope_cache.timestamp) < M.scope_cache.ttl
-	then
-		local suggestions = M.parser.get_scope_suggestions(
-			M.scope_cache.commits, opts
-		)
-		callback(nil, suggestions)
-		return
-	end
-
-	git.get_git_log({ max_count = 200 }, function(err, commits)
-		if err then
-			callback(err, nil)
-			return
-		end
-
-		M.scope_cache.data = true
-		M.scope_cache.commits = commits
-		M.scope_cache.timestamp = now
-
-		local suggestions = M.parser.get_scope_suggestions(commits, opts)
-		callback(nil, suggestions)
-	end)
 end
 
 function M.analyze_repository_scopes()

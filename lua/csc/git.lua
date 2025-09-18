@@ -157,4 +157,37 @@ function M.test_git_commands(callback)
 	)
 end
 
+function M.is_git_repo(path)
+	path = path or vim.fn.getcwd()
+
+	vim.fn.system({ 'git', '-C', path, 'rev-parse', '--git-dir' })
+	return vim.v.shell_error == 0
+end
+
+-- bufnr (buf number)
+function M.is_git_commit_buffer(bufnr)
+	bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+	local bufname = vim.api.nvim_buf_get_name(bufnr)
+	local filetype = vim.bo[bufnr].filetype
+
+	local patterns = {
+		'COMMIT_EDITMSG$',
+		'%.git[/\\]COMMIT_EDITMSG$',
+		'git%-rebase%-todo$',
+	}
+
+	if filetype == 'gitcommit' then
+		return true
+	end
+
+	for _, pattern in ipairs(patterns) do
+		if bufname:match(pattern) then
+			return true
+		end
+	end
+
+	return false
+end
+
 return M

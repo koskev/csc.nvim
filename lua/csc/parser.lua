@@ -1,5 +1,7 @@
 local M = {}
 
+local git = require('csc.git')
+
 function M.get_cursor_context()
 	local cursor_pos = vim.api.nvim_win_get_cursor(0)
 	local line_num = cursor_pos[1]
@@ -178,7 +180,7 @@ local function scope_matches_filters(scope_data, opts)
 
 	if opts.current_input == '' then return true end
 
-	local scope = scope_data
+	local scope = scope_data.scope
 	if vim.startswith(scope:lower(), opts.current_input:lower()) then
 		return true
 	end
@@ -186,7 +188,7 @@ local function scope_matches_filters(scope_data, opts)
 	return false
 end
 
-function M.get_scope_suggestions(commits, opts)
+local function get_suggestions(commits, opts)
 	opts = vim.tbl_extend('force', {
 		min_frequency = 0.01, -- 1% minimum frequency
 		min_count = 1,
@@ -217,6 +219,41 @@ function M.get_scope_suggestions(commits, opts)
 	end
 
 	return suggestions
+end
+
+M.scope_cache = {
+	data = nil,
+	timestamp = 0,
+	ttl = 30000
+}
+
+function M.get_scope_suggestions(opts, callback)
+	opts = opts or {}
+	local now = vim.uv.now()
+
+	if M.scope_cache.data and
+		(now - M.scope_cache.timestamp) < M.scope_cache.ttl
+	then
+		local suggestions = get_suggestions(
+			M.scope_cache.commits, opts
+		)
+		callback(nil, suggestions)
+		return
+	end
+
+	git.get_git_log({ max_count = 200 }, function(err, commits)
+		if err then
+			callback(err, nil)
+			return
+		end
+
+		M.scope_cache.data = true
+		M.scope_cache.commits = commits
+		M.scope_cache.timestamp = now
+
+		local suggestions = get_suggestions(commits, opts)
+		callback(nil, suggestions)
+	end)
 end
 
 function M.validate_commit_message(message)
@@ -289,11 +326,23 @@ function M.start_cursor_tracking(bufnr, config)
 		'CommitScopeCursor', { clear = true }
 	)
 
+	local last_in_scope = false
+
 	vim.api.nvim_create_autocmd({ 'CursorMovedI', 'TextChangedI' }, {
 		group = augroup,
 		buffer = bufnr,
 		callback = function()
 			local edit_context = M.get_scope_edit_context()
+			local currently_in_scope = edit_context.in_scope_parentheses
+
+			if currently_in_scope and not last_in_scope then
+				local ok, cmp = pcall(require, 'cmp')
+				if ok then
+					cmp.complete()
+				end
+			end
+
+			last_in_scope = currently_in_scope
 
 			if config.debug and edit_context.in_scope_parentheses then
 				local msg = string.format("In scope: '%s' (partial: '%s')",
