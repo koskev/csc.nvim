@@ -40,8 +40,6 @@ function source:complete(params, callback)
 		return
 	end
 
-	-- TODO: buffer textt completions seem to be more often
-	-- than used to so maybe check that out
 	local current_input = scope_context.partial_scope or ''
 
 	parser.get_scope_suggestions({
