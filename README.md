@@ -108,6 +108,8 @@ The plugin uses:
 
 ## License
 
-TODO: add license
-TODO: do versioning
-TODO: confirm installation instructions
+## TODOs:
+- TODO: add license
+- TODO: do versioning
+- TODO: confirm installation instructions
+- TODO: make it so this can be installed as a dependency of nvim-cmp
