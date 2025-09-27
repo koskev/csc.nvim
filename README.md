@@ -84,6 +84,13 @@ fix(api): handle null response correctly
 docs(readme): update installation instructions
 ```
 
+## Works Great With
+
+### friendly-snippets
+If you have `friendly-snippets` installed, you get the best of both worlds:
+- **friendly-snippets** provides: `feat(): `, `fix(): `, etc. snippets to quickly start your commit
+- **csc.nvim** provides: intelligent scope completion once you're inside the parentheses
+
 ## Project Structure
 
 ```
