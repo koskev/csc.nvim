@@ -63,9 +63,9 @@ feat(|): add new feature
 
 ```lua
 require('csc').setup({
-  enabled = true,          -- Enable/disable the plugin
-  debug = false,           -- Show debug messages
-  max_suggestions = 10,    -- Maximum number of suggestions
+  enabled = true,
+  debug = false,
+  max_suggestions = 10,
 })
 ```
 
