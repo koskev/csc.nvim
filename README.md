@@ -2,6 +2,23 @@
 
 Commit Scope Completer - intelligent scope suggestions for conventional commits in Neovim.
 
+![Demo](./csc-demo.gif)
+
+## Why csc.nvim?
+
+**The Problem:** When writing conventional commits, you need consistency in your scope names. Did you use `auth` or `authentication`? Was it `ui` or `frontend`? Without consistency, your git history becomes fragmented and less useful.
+
+**Existing Solutions Fall Short:** While there are scope completions available (like those in commitizen or @commitlint), they require Node.js dependencies and project-specific configuration files. You shouldn't need to install a JavaScript toolchain just to get smart completions for your commit messages!
+
+**The csc.nvim Difference:** 
+- **Zero config, zero dependencies** (beyond nvim-cmp)
+- **Learns from YOUR repository** - no generic scope lists
+- **Pure Lua** - no Node.js, no package.json, no .commitlintrc
+- **Intelligent ranking** - suggests your most-used scopes first
+- **Lightning fast** - caches results, no performance impact
+
+Unlike JavaScript-based solutions that require polluting your project with config files and node_modules, csc.nvim lives entirely in your editor, learning from your actual commit history.
+
 ## Features
 
 - **Smart Autocompletion**: Analyzes your repository's commit history to suggest relevant scopes
@@ -18,20 +35,30 @@ Commit Scope Completer - intelligent scope suggestions for conventional commits 
 
 ## Installation
 
-Using [lazy.nvim](https://github.com/folke/lazy.nvim):
+Using lazy.nvim
 
 ```lua
 {
   'yus-works/csc.nvim',
   dependencies = { 'hrsh7th/nvim-cmp' },
-  config = function()
-    require('csc').setup({
-      enabled = true,
-      debug = false,
-      max_suggestions = 10,
-    })
-  end,
+  ft = "gitcommit" -- recommended: only load in commit buffer
 }
+```
+
+Using packer.nvim
+
+```lua
+use {
+  'yus-works/csc.nvim',
+  requires = { 'hrsh7th/nvim-cmp' },
+  ft = { 'gitcommit' }, -- recommended: only load in commit buffer
+}
+```
+
+Using vim-plug
+```
+Plug 'hrsh7th/nvim-cmp'
+Plug 'yus-works/csc.nvim'
 ```
 
 ## Usage
@@ -41,6 +68,23 @@ The plugin automatically activates when editing git commit messages. Start typin
 ```
 feat(|): add new feature
      ^ cursor here triggers scope suggestions
+```
+
+## Works Great With
+
+### friendly-snippets
+If you have `friendly-snippets` installed, you get the best of both worlds:
+- **friendly-snippets** provides: `feat(): `, `fix(): `, etc. snippets to quickly start your commit
+- **csc.nvim** provides: intelligent scope completion once you're inside the parentheses
+
+## Configuration
+
+```lua
+require('csc').setup({
+  enabled = true,
+  debug = false,  -- enables printing debug messages
+  max_suggestions = 10,
+})
 ```
 
 ### Commands
@@ -59,16 +103,6 @@ feat(|): add new feature
 4. Provides contextual suggestions when cursor is within scope parentheses
 5. Caches results for performance (30-second TTL)
 
-## Configuration
-
-```lua
-require('csc').setup({
-  enabled = true,
-  debug = false,
-  max_suggestions = 10,
-})
-```
-
 ## Conventional Commit Format
 
 The plugin recognizes standard conventional commit types:
@@ -84,39 +118,6 @@ fix(api): handle null response correctly
 docs(readme): update installation instructions
 ```
 
-## Works Great With
-
-### friendly-snippets
-If you have `friendly-snippets` installed, you get the best of both worlds:
-- **friendly-snippets** provides: `feat(): `, `fix(): `, etc. snippets to quickly start your commit
-- **csc.nvim** provides: intelligent scope completion once you're inside the parentheses
-
-## Project Structure
-
-```
-├── lua/csc/
-│   ├── init.lua       # Main plugin logic
-│   ├── parser.lua     # Commit message parsing
-│   ├── git.lua        # Git integration
-│   ├── cmp.lua        # nvim-cmp source
-│   ├── commands.lua   # User commands
-│   └── logger.lua     # Debug logging
-└── plugin/
-    └── csc.lua        # Plugin initialization
-```
-
-## Development
-
-The plugin uses:
-- Async git operations via `jobstart`
-- nvim-cmp custom source API
-- Conventional commit regex patterns
-- Scope frequency analysis
-
 ## License
 
-## TODOs:
-- TODO: add license
-- TODO: do versioning
-- TODO: confirm installation instructions
-- TODO: make it so this can be installed as a dependency of nvim-cmp
+[MIT](LICENSE)
