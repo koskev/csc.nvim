@@ -102,7 +102,7 @@ function M.setup(opts)
 		callback = M.on_buffer_enter,
 	})
 
-	require('csc.commands').setup()
+	require('csc.commands').setup(M.logger)
 
 	cmp_source.setup(M.logger)
 
