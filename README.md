@@ -2,7 +2,7 @@
 
 Commit Scope Completer - intelligent scope suggestions for conventional commits in Neovim.
 
-![Demo](./csc-demo.gif)
+![Demo](./csc-demo.gif?v=2)
 
 ## Why csc.nvim?
 
