@@ -47,7 +47,7 @@ Unlike JavaScript-based solutions that require polluting your project with confi
     require('cmp').setup.filetype('gitcommit', {
       sources = {
         { name = 'csc' },
-        { name = 'luasnip' },
+        { name = 'luasnip' }, -- optional but recommended (see "Works Great With" section)
       }
     })
   end
@@ -69,7 +69,7 @@ use {
     require('cmp').setup.filetype('gitcommit', {
       sources = {
         { name = 'csc' },
-        { name = 'luasnip' },
+        { name = 'luasnip' }, -- optional but recommended (see "Works Great With" section)
       }
     })
   end
@@ -92,7 +92,7 @@ lua << EOF
   require('cmp').setup.filetype('gitcommit', {
     sources = {
       { name = 'csc' },
-      { name = 'luasnip' },
+      { name = 'luasnip' }, -- optional but recommended (see "Works Great With" section)
     }
   })
 EOF
