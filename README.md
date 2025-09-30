@@ -145,9 +145,9 @@ Fuzzy matching (thanks to nvim-cmp):
 
 ```
 feat(db|): add new feature
-     ^ completion menu appears:
-       database
-       debugger
+       ^ completion menu appears:
+         database
+         debugger
 ```
 
 ## Works Great With
