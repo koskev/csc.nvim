@@ -133,12 +133,12 @@ feat(|): add new feature
 Also works with a breaking change indicator:
 
 ```
-refactor!(|): change api 
-          ^ completion menu appears:
-            auth
-            api
-            ui
-            database
+refactor(|)!: change api 
+         ^ completion menu appears:
+           auth
+           api
+           ui
+           database
 ```
 
 Fuzzy matching (thanks to nvim-cmp):
