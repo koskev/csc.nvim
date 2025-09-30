@@ -29,10 +29,7 @@ function source:get_trigger_characters()
 	return source.config.trigger_characters
 end
 
-function source:complete(params, callback)
-	local context = params.context
-	local cursor_before_line = context.cursor_before_line
-
+function source:complete(_, callback)
 	local scope_context = parser.get_scope_edit_context()
 
 	if not scope_context.in_scope_parentheses then
