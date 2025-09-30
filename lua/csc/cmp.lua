@@ -79,42 +79,9 @@ function source:complete(params, callback)
 	end)
 end
 
-function M.setup(logger)
+function M.register(logger)
 	source.logger = logger
 	cmp.register_source('csc', source)
-
-	vim.api.nvim_create_autocmd('FileType', {
-		pattern = 'gitcommit',
-		callback = function()
-			local config = cmp.get_config()
-
-			local sources = config.sources or {
-				{ name = 'nvim_lsp' },
-				{ name = 'luasnip' },
-				{ name = 'buffer' },
-				{ name = 'path' },
-			}
-
-			-- add our source with high priority at the beginning
-			-- but only if it's not already there
-			local has_commit_scope = false
-			for _, s in ipairs(sources) do
-				if s.name == 'csc' then
-					has_commit_scope = true
-					break
-				end
-			end
-
-			if not has_commit_scope then
-				table.insert(sources, 1, { name = 'csc', priority = 100 })
-			end
-
-			-- apply the extended configuration
-			cmp.setup.buffer({
-				sources = sources
-			})
-		end
-	})
 end
 
 return M

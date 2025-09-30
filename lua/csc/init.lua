@@ -104,7 +104,7 @@ function M.setup(opts)
 
 	require('csc.commands').setup(M.logger)
 
-	cmp_source.setup(M.logger)
+	cmp_source.register(M.logger)
 
 	M.logger.log("Plugin setup complete")
 end
