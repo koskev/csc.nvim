@@ -81,7 +81,6 @@ If you have `friendly-snippets` installed, you get the best of both worlds:
 
 ```lua
 require('csc').setup({
-  enabled = true,
   debug = false,  -- enables printing debug messages
   max_suggestions = 10,
 })

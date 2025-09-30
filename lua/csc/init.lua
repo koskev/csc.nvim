@@ -1,7 +1,6 @@
 local M = {}
 
 M.config = {
-	enabled = true,
 	debug = false,
 	max_suggestions = 10,
 }
