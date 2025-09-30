@@ -1,45 +1,51 @@
-## Project Structure
+# Contributing to csc.nvim
 
+Thanks for your interest in contributing! PRs and suggestions are welcome.
+
+## Reporting Issues
+
+Please include:
+- Neovim version (`:version`)
+- Minimal config to reproduce the issue
+- Error messages from `:CSC status` or `:messages`
+- Your git version (`git --version`)
+
+## Submitting Pull Requests
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes following conventional commits (`feat:`, `fix:`, etc.)
+4. Push to your branch
+5. Open a Pull Request
+
+## Development Setup
+
+Clone the repo and point your plugin manager to your local copy for testing changes.
+
+Enable debug mode for development:
+```lua
+require('csc').setup({ debug = true })
 ```
-├── lua/csc/
-│   ├── init.lua       # Main plugin logic
-│   ├── parser.lua     # Commit message parsing
-│   ├── git.lua        # Git integration
-│   ├── cmp.lua        # nvim-cmp source
-│   ├── commands.lua   # User commands
-│   └── logger.lua     # Debug logging
-└── plugin/
-    └── csc.lua        # Version check; no autoload
-```
 
-## Development
+## Code Style
 
-The plugin uses:
-- Async git operations via `jobstart`
-- nvim-cmp custom source API
-- Conventional commit regex patterns
-- Scope frequency analysis
+- Use tabs for indentation as per lua_ls
+- Follow existing patterns in the codebase
+- Keep functions focused
+- Add comments for complex logic
 
-## How It Works
+## Testing Your Changes
 
-1. Monitors git commit buffers (`COMMIT_EDITMSG`)
-2. Parses commit history for conventional commit patterns
-3. Extracts and ranks scopes by frequency
-4. Provides contextual suggestions when cursor is within scope parentheses
-5. Caches results for performance (30-second TTL)
-
-### Commands
-
+Run the built-in test commands to verify functionality:
 - `:CSC test` - Test plugin functionality
 - `:CSC test_git` - Test git integration
-- `:CSC analyze` - Analyze repository scope usage
-- `:CSC status` - Show current buffer status
-- `:CSC help` - Display available commands
+- `:CSC analyze` - Verify scope parsing
+- Check `:messages` for debug output
+
+## Questions?
+
+Feel free to open an issue for discussion before implementing major changes.
 
 ## License
 
-## TODOs:
-- TODO: add license
-- TODO: confirm installation instructions
-- TODO: make cache TTL configurable
-- TODO: update README Troubleshooting section to include configurable TTL
+By contributing, you agree that your contributions will be licensed under the MIT License.
