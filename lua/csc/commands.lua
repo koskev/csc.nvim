@@ -1,7 +1,7 @@
 local M = {}
 
 -- subcommands
-Subs = {
+local subs = {
 	test = {
 		desc = "Basic plugin test",
 		run = function(_) require('csc').test_plugin() end,
@@ -22,7 +22,7 @@ Subs = {
 		desc = "Show this help",
 		run = function(_)
 			local lines = { "CSC subcommands:" }
-			for name, s in pairs(Subs) do
+			for name, s in pairs(subs) do
 				table.insert(lines, ("%-9s - %s"):format(name, s.desc))
 			end
 
@@ -39,7 +39,7 @@ Subs = {
 local function complete_sub(_, line)
 	local arg = line:match("^%S+%s+(%S*)$") or ""
 	local out = {}
-	for name, _ in pairs(Subs) do
+	for name, _ in pairs(subs) do
 		if name:find("^" .. vim.pesc(arg)) then table.insert(out, name) end
 	end
 	table.sort(out)
@@ -53,7 +53,7 @@ function M.setup(logger)
 		"CSC",
 		function(opts)
 			local sub = (opts.fargs[1] or "help"):lower()
-			local cmd = Subs[sub]
+			local cmd = subs[sub]
 			if not cmd then
 				if M.logger then
 					M.logger.log(
@@ -61,7 +61,7 @@ function M.setup(logger)
 						vim.log.levels.WARN
 					)
 				end
-				Subs.help.run()
+				subs.help.run()
 				return
 			end
 			cmd.run(opts)
