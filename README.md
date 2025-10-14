@@ -27,12 +27,14 @@ Unlike JavaScript-based solutions that require polluting your project with confi
 ## Requirements
 
 - Neovim 0.8.0+
-- [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
+- [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) or [blink.cmp](https://github.com/saghen/blink.cmp)
 - Git repository
 
 ## Installation
 
-### Using lazy.nvim
+### nvim-cmp
+
+#### Using lazy.nvim
 
 ```lua
 {
@@ -54,7 +56,7 @@ Unlike JavaScript-based solutions that require polluting your project with confi
 }
 ```
 
-### Using packer.nvim
+#### Using packer.nvim
 
 ```lua
 use {
@@ -76,7 +78,7 @@ use {
 }
 ```
 
-### Using vim-plug
+#### Using vim-plug
 
 ```vim
 Plug 'hrsh7th/nvim-cmp'
@@ -98,7 +100,7 @@ lua << EOF
 EOF
 ```
 
-### Minimal setup (optional)
+#### Minimal setup (optional)
 
 If you prefer to only load csc.nvim as a source to nvim-cmp, without the other
 functionality such as the helper commands and colorcolumns, you may replace:
@@ -111,6 +113,61 @@ with
 
 ```lua
 require('csc.cmp').register()
+```
+
+the completion suggestions will work exactly as before.
+
+### blink.cmp
+
+#### Using lazy.nvim
+
+```lua
+{
+  'saghen/blink.cmp',
+  dependencies = {
+    'yus-works/csc.nvim',
+    -- other cmp sources...
+  },
+}
+```
+
+#### Using packer.nvim
+
+```lua
+use {
+  'hrsh7th/nvim-cmp',
+  requires = {
+    { 'yus-works/csc.nvim' },
+    -- other sources...
+  },
+  config = function()
+    require('csc').setup()
+  end
+}
+```
+
+#### Using vim-plug
+
+```vim
+Plug 'saghen/blink.cmp'
+Plug 'yus-works/csc.nvim'
+```
+
+Then in your init.vim/init.lua after plug#end():
+
+```vim
+lua << EOF
+  require('csc').setup()
+EOF
+```
+
+#### Minimal setup (optional)
+
+If you prefer to only load csc.nvim as a source to blink.cmp, without the other
+functionality such as the helper commands and colorcolumns, you may drop the:
+
+```lua
+require('csc').setup()
 ```
 
 the completion suggestions will work exactly as before.
