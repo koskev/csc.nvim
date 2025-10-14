@@ -21,7 +21,7 @@ Unlike JavaScript-based solutions that require polluting your project with confi
 
 - **Context-Aware**: Only triggers within scope parentheses `type(|): description`
 - **Intelligent Caching** - stays responsive even in large repos
-- **nvim-cmp Integration**: Works as nvim-cmp source
+- **nvim-cmp/blink.cmp Integration**: Works as nvim-cmp/blink.cmp source
 - **Git Commit Guidelines**: Adds color columns at 50 and 72 characters for proper commit message formatting
 
 ## Requirements
@@ -198,7 +198,7 @@ refactor(|)!: change api
            database
 ```
 
-Fuzzy matching (thanks to nvim-cmp):
+Fuzzy matching (thanks to nvim-cmp/blink.cmp):
 
 ```
 feat(db|): add new feature
