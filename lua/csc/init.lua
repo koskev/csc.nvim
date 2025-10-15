@@ -73,8 +73,6 @@ function M.show_commit_status()
 	)
 end
 
-local cmp_source = require('csc.cmp')
-
 function M.setup(opts)
 	M.config = vim.tbl_deep_extend("force", M.config, opts or {})
 
@@ -103,7 +101,13 @@ function M.setup(opts)
 
 	require('csc.commands').setup(M.logger)
 
-	cmp_source.register(M.logger)
+  if pcall(require, 'cmp') then
+    require('csc.cmp').register(M.logger)
+  elseif pcall(require, 'blink.cmp') then
+    require('csc.blink-cmp').set_logger(M.logger)
+  else
+    M.logger.log("No completion engine found", vim.log.levels.WARN)
+  end
 
 	M.logger.log("Plugin setup complete")
 end

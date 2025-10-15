@@ -21,16 +21,18 @@ Unlike JavaScript-based solutions that require polluting your project with confi
 
 - **Context-Aware**: Only triggers within scope parentheses `type(|): description`
 - **Intelligent Caching** - stays responsive even in large repos
-- **nvim-cmp Integration**: Works as nvim-cmp source
+- **nvim-cmp/blink.cmp Integration**: Works as nvim-cmp/blink.cmp source
 - **Git Commit Guidelines**: Adds color columns at 50 and 72 characters for proper commit message formatting
 
 ## Requirements
 
 - Neovim 0.8.0+
-- [nvim-cmp](https://github.com/hrsh7th/nvim-cmp)
+- [nvim-cmp](https://github.com/hrsh7th/nvim-cmp) or [blink.cmp](https://github.com/saghen/blink.cmp)
 - Git repository
 
 ## Installation
+
+<details><summary>nvim-cmp</summary>
 
 ### Using lazy.nvim
 
@@ -39,7 +41,7 @@ Unlike JavaScript-based solutions that require polluting your project with confi
   'hrsh7th/nvim-cmp',
   dependencies = {
     'yus-works/csc.nvim',
-    -- other cmp sources...
+    -- other sources...
   },
   config = function()
     require('csc').setup()
@@ -115,6 +117,67 @@ require('csc.cmp').register()
 
 the completion suggestions will work exactly as before.
 
+</details>
+
+<details><summary>blink.cmp</summary>
+
+### Using lazy.nvim
+
+```lua
+{
+  'saghen/blink.cmp',
+  dependencies = {
+    { 'yus-works/csc.nvim', opts = {} },
+    -- other sources...
+  },
+}
+```
+
+### Using packer.nvim
+
+```lua
+use {
+  'saghen/blink.cmp',
+  requires = {
+    { 'yus-works/csc.nvim' },
+    -- other sources...
+  },
+  config = function()
+    require('csc').setup()
+  end
+}
+```
+
+### Using vim-plug
+
+```vim
+Plug 'saghen/blink.cmp'
+Plug 'yus-works/csc.nvim'
+```
+
+Then in your init.vim/init.lua after plug#end():
+
+```vim
+lua << EOF
+  require('csc').setup()
+EOF
+```
+
+### Minimal setup (optional)
+
+If you prefer to only load csc.nvim as a source to blink.cmp, without the other
+functionality such as the helper commands and colorcolumns, you may drop the:
+
+```lua
+require('csc').setup()
+-- or for lazy.nvim, the equivalent
+opts = {}
+```
+
+the completion suggestions will work exactly as before.
+
+</details>
+
 ## Usage
 
 The plugin automatically activates when editing git commit messages.
@@ -141,7 +204,7 @@ refactor(|)!: change api
            database
 ```
 
-Fuzzy matching (thanks to nvim-cmp):
+Fuzzy matching (thanks to nvim-cmp/blink.cmp):
 
 ```
 feat(db|): add new feature

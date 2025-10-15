@@ -1,38 +1,28 @@
-local M = {}
-
-local cmp = require('cmp')
 local git = require('csc.git')
 local parser = require('csc.parser')
 
+--- @class csc.BlinkCmpSource : blink.cmp.Source
 local source = {}
 
-source.config = {
-	priority = 100,
-	keyword_pattern = [[\k\+]],
-	trigger_characters = { '(' }
-}
+source.config = { trigger_characters = { '(' } }
 
-function source:is_available()
+function source.new()
+  return setmetatable({}, { __index = source })
+end
+
+function source:enabled()
 	return git.is_git_repo()
-end
-
-function source:get_debug_name()
-	return 'CommitScopeCompleter'
-end
-
-function source:get_keyword_pattern()
-	return source.config.keyword_pattern
 end
 
 function source:get_trigger_characters()
 	return source.config.trigger_characters
 end
 
-function source:complete(_, callback)
+function source:get_completions(_, callback)
 	local scope_context = parser.get_scope_edit_context()
 
 	if not scope_context.in_scope_parentheses then
-		callback({})
+		callback()
 		return
 	end
 
@@ -46,7 +36,7 @@ function source:complete(_, callback)
 			if self.logger then
 				self.logger.log("Completion error:", err)
 			end
-			callback({})
+			callback()
 			return
 		end
 
@@ -54,7 +44,7 @@ function source:complete(_, callback)
 		for _, suggestion in ipairs(suggestions) do
 			table.insert(items, {
 				label = suggestion.label,
-				kind = cmp.lsp.CompletionItemKind.Text,
+				kind = require('blink.cmp.types').CompletionItemKind.Text,
 				detail = suggestion.detail,
 				documentation = {
 					kind = 'markdown',
@@ -71,13 +61,12 @@ function source:complete(_, callback)
 			})
 		end
 
-		callback(items)
+		callback({ is_incomplete_forward = false, is_incomplete_backward = true, items = items })
 	end)
 end
 
-function M.register(logger)
+function source.set_logger(logger)
 	source.logger = logger
-	cmp.register_source('csc', source)
 end
 
-return M
+return source
