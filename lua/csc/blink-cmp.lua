@@ -11,8 +11,7 @@ function source.new()
 end
 
 function source:enabled()
-	local bufnr = vim.api.nvim_get_current_buf()
-	return git.is_git_commit_buffer(bufnr) and git.is_git_repo()
+	return git.is_git_repo()
 end
 
 function source:get_trigger_characters()
