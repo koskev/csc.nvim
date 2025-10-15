@@ -37,7 +37,7 @@ require('csc').setup({ debug = true })
 ## Testing Your Changes
 
 Run the built-in test commands to verify functionality:
-- `:CSC test` - Test plugin functionality
+- `:CSC status` - Test plugin functionality
 - `:CSC test_git` - Test git integration
 - `:CSC analyze` - Verify scope parsing
 - Check `:messages` for debug output

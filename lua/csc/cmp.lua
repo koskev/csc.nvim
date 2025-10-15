@@ -12,10 +12,6 @@ source.config = {
 	trigger_characters = { '(' }
 }
 
-function source:is_available()
-	return git.is_git_repo()
-end
-
 function source:get_debug_name()
 	return 'CommitScopeCompleter'
 end

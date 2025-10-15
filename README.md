@@ -240,7 +240,7 @@ require('csc').setup({
 ## Troubleshooting
 
 **No suggestions appearing?**
-- Ensure you're in a git repository using `git status` or `:CSC test_git`
+- Ensure the plugin is reading git history using `:CSC test_git`
 - Check that your cursor is between the parentheses and in INSERT mode: `feat(|):`
 - Verify the plugin loaded: `:CSC status`
 

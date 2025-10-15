@@ -57,21 +57,6 @@ function M.get_git_root(callback)
 	)
 end
 
-function M.is_in_git_repo(callback)
-	M.run_git_command(
-		{ 'rev-parse', '--is-inside-work-tree' },
-		{},
-		function(err, output)
-			if err then
-				callback(nil, false)
-			else
-				local is_inside = output[1] and vim.trim(output[1]) == 'true'
-				callback(nil, is_inside)
-			end
-		end
-	)
-end
-
 function M.get_git_log(opts, callback)
 	opts = vim.tbl_extend('force', {
 		max_count = 100,
@@ -134,34 +119,18 @@ function M.test_git_commands(callback)
 				return
 			end
 
-			M.is_in_git_repo(function(err, in_repo)
-				results.in_repo = in_repo
+			M.get_git_root(function(err, root)
+				results.git_root = root
 
-				if not in_repo then
+				M.get_git_log({ max_count = 5 }, function(err, commits)
+					if not err then
+						results.recent_commits = commits
+					end
 					callback(results)
-					return
-				end
-
-				M.get_git_root(function(err, root)
-					results.git_root = root
-
-					M.get_git_log({ max_count = 5 }, function(err, commits)
-						if not err then
-							results.recent_commits = commits
-						end
-						callback(results)
-					end)
 				end)
 			end)
 		end
 	)
-end
-
-function M.is_git_repo(path)
-	path = path or vim.fn.getcwd()
-
-	vim.fn.system({ 'git', '-C', path, 'rev-parse', '--git-dir' })
-	return vim.v.shell_error == 0
 end
 
 -- bufnr (buf number)

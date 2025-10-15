@@ -34,7 +34,6 @@ The plugin uses:
 
 These commands are available for debugging and development:
 
-- `:CSC test` - Test plugin functionality
 - `:CSC test_git` - Test git integration
 - `:CSC analyze` - Analyze repository scope usage
 - `:CSC status` - Show current buffer status
