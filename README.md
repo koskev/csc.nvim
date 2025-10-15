@@ -41,7 +41,7 @@ Unlike JavaScript-based solutions that require polluting your project with confi
   'hrsh7th/nvim-cmp',
   dependencies = {
     'yus-works/csc.nvim',
-    -- other cmp sources...
+    -- other sources...
   },
   config = function()
     require('csc').setup()
@@ -127,8 +127,8 @@ the completion suggestions will work exactly as before.
 {
   'saghen/blink.cmp',
   dependencies = {
-    'yus-works/csc.nvim',
-    -- other cmp sources...
+    { 'yus-works/csc.nvim', opts = {} },
+    -- other sources...
   },
 }
 ```
@@ -137,7 +137,7 @@ the completion suggestions will work exactly as before.
 
 ```lua
 use {
-  'hrsh7th/nvim-cmp',
+  'saghen/blink.cmp',
   requires = {
     { 'yus-works/csc.nvim' },
     -- other sources...
@@ -170,6 +170,8 @@ functionality such as the helper commands and colorcolumns, you may drop the:
 
 ```lua
 require('csc').setup()
+-- or for lazy.nvim, the equivalent
+opts = {}
 ```
 
 the completion suggestions will work exactly as before.
