@@ -29,7 +29,7 @@ require('csc').setup({ debug = true })
 
 ## Code Style
 
-- Use tabs for indentation as per lua_ls
+- Use stylua to format your code according to the `.stylua.toml`
 - Follow existing patterns in the codebase
 - Keep functions focused
 - Add comments for complex logic
