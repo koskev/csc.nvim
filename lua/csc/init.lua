@@ -10,25 +10,6 @@ local git = require('csc.git')
 
 M.initialized_buffers = {}
 
-function M.on_buffer_enter(args)
-	local bufnr = args.buf
-
-	-- skip if already initialized
-	if M.initialized_buffers[bufnr] then
-		M.logger.log("Buffer already initialized:" .. bufnr)
-		return
-	end
-
-	-- TODO: this might also be redundant
-	if git.is_git_commit_buffer(bufnr) then
-		M.logger.log("Detected git commit buffer:" .. vim.api.nvim_buf_get_name(bufnr))
-		M.setup_commit_buffer(bufnr)
-
-		-- mark as initialized
-		M.initialized_buffers[bufnr] = true
-	end
-end
-
 function M.setup_commit_buffer(bufnr)
 	vim.bo[bufnr].textwidth = 72
 	vim.bo[bufnr].formatoptions = 'tqn'
@@ -80,6 +61,24 @@ function M.setup(opts)
 		'CommitScopeBuffer', { clear = true }
 	)
 
+	vim.api.nvim_create_autocmd('FileType', {
+		group = augroup,
+		pattern = 'gitcommit',
+		callback = function(args)
+			local bufnr = args.buf
+
+			-- skip if already initialized
+			if M.initialized_buffers[bufnr] then
+				M.logger.log("Buffer already initialized:" .. bufnr)
+				return
+			end
+
+			M.logger.log("Detected git commit buffer:" .. vim.api.nvim_buf_get_name(bufnr))
+			M.setup_commit_buffer(bufnr)
+			M.initialized_buffers[bufnr] = true
+		end,
+	})
+
 	-- clean up when buffers are deleted
 	vim.api.nvim_create_autocmd('BufDelete', {
 		group = augroup,
@@ -88,20 +87,15 @@ function M.setup(opts)
 		end,
 	})
 
-	vim.api.nvim_create_autocmd({ 'BufEnter', 'BufNewFile', 'BufRead' }, {
-		group = augroup,
-		callback = M.on_buffer_enter,
-	})
-
 	require('csc.commands').setup(M.logger)
 
-  if pcall(require, 'cmp') then
-    require('csc.cmp').register(M.logger)
-  elseif pcall(require, 'blink.cmp') then
-    require('csc.blink-cmp').set_logger(M.logger)
-  else
-    M.logger.log("No completion engine found", vim.log.levels.WARN)
-  end
+	if pcall(require, 'cmp') then
+		require('csc.cmp').register(M.logger)
+	elseif pcall(require, 'blink.cmp') then
+		require('csc.blink-cmp').set_logger(M.logger)
+	else
+		M.logger.log("No completion engine found", vim.log.levels.WARN)
+	end
 
 	M.logger.log("Plugin setup complete")
 end
