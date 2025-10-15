@@ -19,11 +19,7 @@ function M.on_buffer_enter(args)
 		return
 	end
 
-	if not git.is_git_repo() then
-		M.logger.log("Not in a git repository")
-		return
-	end
-
+	-- TODO: this might also be redundant
 	if git.is_git_commit_buffer(bufnr) then
 		M.logger.log("Detected git commit buffer:" .. vim.api.nvim_buf_get_name(bufnr))
 		M.setup_commit_buffer(bufnr)
@@ -61,8 +57,6 @@ function M.show_commit_status()
 	local status_info = {
 		"Commit Scope Status:",
 		"",
-		"Git repo: " .. (git.is_git_repo() and "Yes" or "No"),
-		"Commit buffer: " .. (git.is_git_commit_buffer(bufnr) and "Yes" or "No"),
 		"Buffer name: " .. vim.api.nvim_buf_get_name(bufnr),
 		"Filetype: " .. vim.bo[bufnr].filetype,
 	}
@@ -112,24 +106,12 @@ function M.setup(opts)
 	M.logger.log("Plugin setup complete")
 end
 
-function M.test_plugin()
-	local results = {
-		"Plugin Test Results:",
-		"",
-		"Git repo: " .. (git.is_git_repo() and "Yes" or "No"),
-		"Commit buffer: " .. (git.is_git_commit_buffer() and "Yes" or "No"),
-	}
-
-	M.logger.log(table.concat(results, '\n'), vim.log.levels.INFO)
-end
-
 function M.test_git_integration()
 	local callback = function(results)
 		local output = {
 			"Git Integration Test Results:",
 			"",
 			"Git available: " .. (results.git_available and "Yes" or "No"),
-			"In git repo: " .. (results.in_repo and "Yes" or "No"),
 		}
 
 		if results.git_root then

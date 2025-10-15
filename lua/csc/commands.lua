@@ -2,10 +2,6 @@ local M = {}
 
 -- subcommands
 local subs = {
-	test = {
-		desc = "Basic plugin test",
-		run = function(_) require('csc').test_plugin() end,
-	},
 	test_git = {
 		desc = "Test git integration",
 		run = function(_) require('csc').test_git_integration() end,

@@ -10,10 +10,6 @@ function source.new()
   return setmetatable({}, { __index = source })
 end
 
-function source:enabled()
-	return git.is_git_repo()
-end
-
 function source:get_trigger_characters()
 	return source.config.trigger_characters
 end
