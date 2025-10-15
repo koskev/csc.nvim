@@ -18,22 +18,24 @@ local subs = {
 		desc = "Show status for current buffer",
 		run = function(_) require('csc').show_commit_status() end,
 	},
-	help = {
-		desc = "Show this help",
-		run = function(_)
-			local lines = { "CSC subcommands:" }
-			for name, s in pairs(subs) do
-				table.insert(lines, ("%-9s - %s"):format(name, s.desc))
-			end
+}
 
-			if M.logger then
-				M.logger.log(
-					table.concat(lines, "\n"),
-					vim.log.levels.INFO
-				)
-			end
-		end,
-	},
+-- define help command after subs table is created to avoid scope issue
+subs.help = {
+	desc = "Show this help",
+	run = function(_)
+		local lines = { "CSC subcommands:" }
+		for name, s in pairs(subs) do
+			table.insert(lines, ("%-9s - %s"):format(name, s.desc))
+		end
+
+		if M.logger then
+			M.logger.log(
+				table.concat(lines, "\n"),
+				vim.log.levels.INFO
+			)
+		end
+	end,
 }
 
 local function complete_sub(_, line)
