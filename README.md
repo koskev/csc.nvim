@@ -32,9 +32,9 @@ Unlike JavaScript-based solutions that require polluting your project with confi
 
 ## Installation
 
-### nvim-cmp
+<details><summary>nvim-cmp</summary>
 
-#### Using lazy.nvim
+### Using lazy.nvim
 
 ```lua
 {
@@ -56,7 +56,7 @@ Unlike JavaScript-based solutions that require polluting your project with confi
 }
 ```
 
-#### Using packer.nvim
+### Using packer.nvim
 
 ```lua
 use {
@@ -78,7 +78,7 @@ use {
 }
 ```
 
-#### Using vim-plug
+### Using vim-plug
 
 ```vim
 Plug 'hrsh7th/nvim-cmp'
@@ -100,7 +100,7 @@ lua << EOF
 EOF
 ```
 
-#### Minimal setup (optional)
+### Minimal setup (optional)
 
 If you prefer to only load csc.nvim as a source to nvim-cmp, without the other
 functionality such as the helper commands and colorcolumns, you may replace:
@@ -117,9 +117,11 @@ require('csc.cmp').register()
 
 the completion suggestions will work exactly as before.
 
-### blink.cmp
+</details>
 
-#### Using lazy.nvim
+<details><summary>blink.cmp</summary>
+
+### Using lazy.nvim
 
 ```lua
 {
@@ -131,7 +133,7 @@ the completion suggestions will work exactly as before.
 }
 ```
 
-#### Using packer.nvim
+### Using packer.nvim
 
 ```lua
 use {
@@ -146,7 +148,7 @@ use {
 }
 ```
 
-#### Using vim-plug
+### Using vim-plug
 
 ```vim
 Plug 'saghen/blink.cmp'
@@ -161,7 +163,7 @@ lua << EOF
 EOF
 ```
 
-#### Minimal setup (optional)
+### Minimal setup (optional)
 
 If you prefer to only load csc.nvim as a source to blink.cmp, without the other
 functionality such as the helper commands and colorcolumns, you may drop the:
@@ -171,6 +173,8 @@ require('csc').setup()
 ```
 
 the completion suggestions will work exactly as before.
+
+</details>
 
 ## Usage
 
