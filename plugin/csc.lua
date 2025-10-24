@@ -14,5 +14,5 @@ if pcall(require, "blink.cmp") then
         "csc",
         { module = "csc.blink-cmp", name = "csc" }
     )
-    require("blink.cmp").add_filetype_source("gitcommit", "csc")
+    -- require("blink.cmp").add_filetype_source("gitcommit", "csc")
 end
