@@ -66,7 +66,9 @@ function M.find_scope_context(line, col)
     end
 
     if not close_paren then
-        return nil
+        -- If no close paren can be found: Just use the end of the line
+        -- Allows to complete fix(|
+        close_paren = #line + 1
     end
 
     local content = line:sub(open_paren + 1, close_paren - 1)
